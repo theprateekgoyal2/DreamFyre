@@ -52,19 +52,25 @@ class FitnessClass(Base):
             name=name,
             description=description,
             datetime=class_datetime,
-            duration_minutes=duration_minutes,
+            duration=duration_minutes,
             instructor=instructor,
             available_slots=capacity,
             capacity=capacity,
         )
 
     @classmethod
-    def get_by_id(cls, session, class_id: int):
+    def get_by_id(cls, session, class_id: int, with_for_update=False, no_wait=False):
+        if with_for_update:
+            return session.query(cls).with_for_update(nowait=no_wait).filter_by(prim_id=class_id).first()
         return session.query(cls).filter_by(prim_id=class_id).first()
 
     @classmethod
     def get_by_ids(cls, session, class_ids: list):
         return session.query(cls).filter(cls.prim_id.in_(class_ids)).all()
+
+    @classmethod
+    def get_by_name(cls, session, name):
+        return session.query(cls).filter(name=name).all()
 
     def to_dict(self):
         return {
