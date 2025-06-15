@@ -1,9 +1,8 @@
 from fitness.routes import api_routes as fitness_apis
+from users.routes import api_routes as user_apis
+from create_app import app
 
-
-from ..app_instance import app
-
-all_routes = fitness_apis
+all_routes = fitness_apis + user_apis
 
 
 def configure_app_routes():

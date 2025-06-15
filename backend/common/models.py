@@ -1,4 +1,4 @@
-from fitness.models import FitnessClass, Booking
+from fitness.models import FitnessClass, Bookings
 
 
-all_models = [FitnessClass, Booking]
+all_models = [FitnessClass, Bookings]
