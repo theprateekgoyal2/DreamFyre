@@ -1,8 +1,6 @@
-import os
 import sys
-
+from create_app import app
 sys.path.insert(0, '/')
-from app_instance import app
 from app_configuration import configure_current_application
 
 

@@ -6,6 +6,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.exc import SQLAlchemyError
 from sql_config import Base
+from users.models import Users
 from .constants import BookingStatus
 
 IST = timezone("Asia/Kolkata")
@@ -79,8 +80,8 @@ class FitnessClass(Base):
         }
 
 
-class Booking(Base):
-    __tablename__ = 'Booking'
+class Bookings(Base):
+    __tablename__ = 'Bookings'
 
     prim_id = Column(Integer, primary_key=True)
     class_id = Column(Integer, ForeignKey('FitnessClass.prim_id'), nullable=False)
@@ -90,7 +91,8 @@ class Booking(Base):
     dt_created = Column(DateTime, default=func.now())
     dt_updated = Column(DateTime, onupdate=func.now(), default=func.now())
 
-    fitness_class = relationship("FitnessClass", backref="Booking")
+    fitness_class = relationship("FitnessClass", backref="Bookings")
+    client = relationship("Users", backref="Bookings")
 
     def __repr__(self):
         return f"<Booking id={self.prim_id} for class_id={self.class_id} by {self.client_id}>"
