@@ -4,7 +4,7 @@ from sqlalchemy import (
     func, Column, String, Integer, DateTime, Boolean, ForeignKey, JSON, Time, Text
 )
 from sqlalchemy.orm import relationship
-from sqlalchemy.exc import SQLAlchemyError
+from flask_jwt_extended import decode_token
 from sql_config import Base
 from extensions import bcrypt
 
@@ -46,6 +46,12 @@ class Users(Base):
     @classmethod
     def get_by_mobile(cls, session, mobile: str):
         return session.query(cls).filter_by(mobile=mobile).first()
+
+    @classmethod
+    def get_user_id(cls, session, token):
+        data = decode_token(token)
+        current_user = session.query(cls).filter_by(prim_id=data['sub']).first()
+        return current_user.prim_id if current_user else None
 
     def to_dict(self):
         return {

@@ -18,32 +18,54 @@ def validate_number(phone: str) -> bool:
     return phonenumbers.is_valid_number(my_number)
 
 
-def validate_user_data(name: str, password: str, email: str, mobile: str, login: bool, session: Any) -> dict:
-    if not name:
-        return {"error": "Name is required"}
+def validate_user_data(
+    name: str,
+    password: str,
+    email: str,
+    mobile: str,
+    login: bool,
+    session: Any
+) -> dict:
+    """
+    Validates user input for registration or login.
 
-    if len(password) < 6:
-        return {"error": "Password must be at least 6 characters long"}
+    Args:
+        name (str): User's name.
+        password (str): Password string.
+        email (str): User's email address (optional if mobile is provided).
+        mobile (str): User's mobile number (optional if email is provided).
+        login (bool): Flag to determine if it's a login or registration validation.
+        session (Any): SQLAlchemy session.
+
+    Returns:
+        dict: A dictionary containing either an error message or a success message.
+    """
+
+    def error(msg: str) -> dict:
+        return {"error": msg}
+
+    if not name or not name.strip():
+        return error("Name is required")
+
+    if not password or len(password) < 6:
+        return error("Password must be at least 6 characters long")
 
     if not email and not mobile:
-        return {"error": "Either email address or mobile number is required"}
+        return error("Either email address or mobile number is required")
 
-    if email:
-        if not validate_email(email):
-            return {"error": "Please enter a valid email address"}
+    if email and not validate_email(email):
+        return error("Please enter a valid email address")
 
-    if mobile:
-        phone = f'+91{str(mobile)}'
-        if not validate_number(phone):
-            return {"error": "Invalid phone number"}
+    if mobile and not validate_number(f'+91{str(mobile)}'):
+        return error("Invalid phone number format")
 
     if not login:
-        if email:
-            if Users.get_by_email(session, email):
-                return {"error": "User with this email already exists, please login"}
+        # Registration flow: Check if user already exists
+        if email and Users.get_by_email(session, email):
+            return error("User with this email already exists, please login")
 
-        if mobile:
-            if Users.get_by_mobile(session, mobile):
-                return {"error": "User with this mobile number already exists, please login"}
+        if mobile and Users.get_by_mobile(session, mobile):
+            return error("User with this mobile number already exists, please login")
 
-    return {'message': 'User validated successfully'}
+    return {"message": "User validated successfully"}
+

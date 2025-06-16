@@ -6,7 +6,6 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.exc import SQLAlchemyError
 from sql_config import Base
-from users.models import Users
 from .constants import BookingStatus
 
 IST = timezone("Asia/Kolkata")
@@ -52,23 +51,29 @@ class FitnessClass(Base):
             name=name,
             description=description,
             datetime=class_datetime,
-            duration_minutes=duration_minutes,
+            duration=duration_minutes,
             instructor=instructor,
             available_slots=capacity,
             capacity=capacity,
         )
 
     @classmethod
-    def get_by_id(cls, session, class_id: int):
+    def get_by_id(cls, session, class_id: int, with_for_update=False, no_wait=False):
+        if with_for_update:
+            return session.query(cls).with_for_update(nowait=no_wait).filter_by(prim_id=class_id).first()
         return session.query(cls).filter_by(prim_id=class_id).first()
 
     @classmethod
     def get_by_ids(cls, session, class_ids: list):
         return session.query(cls).filter(cls.prim_id.in_(class_ids)).all()
 
+    @classmethod
+    def get_by_name(cls, session, name):
+        return session.query(cls).filter_by(name=name).all()
+
     def to_dict(self):
         return {
-            'prim_id': self.id,
+            'class_id': self.prim_id,
             'name': self.name,
             'description': self.description,
             'datetime': str(self.datetime),
@@ -113,9 +118,13 @@ class Bookings(Base):
     def get_by_client_id(cls, session, client_id):
         return session.query(cls).filter_by(client_id=client_id).all()
 
+    @classmethod
+    def get_existing_booking(cls, session, class_id, client_id):
+        return session.query(cls).filter_by(client_id=client_id, class_id=class_id, status=BookingStatus.CONFIRMED.value).first()
+
     def to_dict(self):
         return {
-            "prim_id": self.prim_id,
+            "booking_id": self.prim_id,
             "class_id": self.class_id,
             "client_id": self.client_id,
             "booked_at": str(self.booked_at),
