@@ -6,7 +6,6 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.exc import SQLAlchemyError
 from sql_config import Base
-from users.models import Users
 from .constants import BookingStatus
 
 IST = timezone("Asia/Kolkata")
@@ -74,7 +73,7 @@ class FitnessClass(Base):
 
     def to_dict(self):
         return {
-            'prim_id': self.id,
+            'class_id': self.prim_id,
             'name': self.name,
             'description': self.description,
             'datetime': str(self.datetime),
@@ -119,9 +118,13 @@ class Bookings(Base):
     def get_by_client_id(cls, session, client_id):
         return session.query(cls).filter_by(client_id=client_id).all()
 
+    @classmethod
+    def get_existing_booking(cls, session, class_id, client_id):
+        return session.query(cls).filter_by(client_id=client_id, class_id=class_id, status=BookingStatus.CONFIRMED.value).first()
+
     def to_dict(self):
         return {
-            "prim_id": self.prim_id,
+            "booking_id": self.prim_id,
             "class_id": self.class_id,
             "client_id": self.client_id,
             "booked_at": str(self.booked_at),

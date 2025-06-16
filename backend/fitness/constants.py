@@ -13,7 +13,7 @@ class BookingStatus(Enum):
     CANCELLED = 'cancelled'
 
 
-Fitness_Class_Description_Mapper = {
+FitnessClassDescriptionMapper = {
     FitnessClasses.ZUMBA.value: "Low-weight dance",
     FitnessClasses.YOGA.value: "Evening relaxation",
     FitnessClasses.HIIT.value: "High intensity interval training"

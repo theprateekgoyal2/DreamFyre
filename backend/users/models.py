@@ -51,7 +51,7 @@ class Users(Base):
     def get_user_id(cls, session, token):
         data = decode_token(token)
         current_user = session.query(cls).filter_by(prim_id=data['sub']).first()
-        return current_user.id if current_user else None
+        return current_user.prim_id if current_user else None
 
     def to_dict(self):
         return {

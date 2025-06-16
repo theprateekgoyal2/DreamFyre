@@ -1,5 +1,5 @@
-from .apis import (get_fitness_classes_api, get_class_bookings_per_user_api, create_new_fitness_class_api,
-                   create_class_booking_per_user_api)
+from .apis import get_fitness_classes_api, get_class_bookings_per_user_api, create_new_fitness_class_api, \
+    create_class_booking_per_user_api, cancel_user_class_booking_api
 
 api_routes = [
     ('/api/classes', get_fitness_classes_api, ['GET']),
@@ -11,6 +11,9 @@ api_routes = [
     ('/api/users/bookings', create_class_booking_per_user_api, ['POST']),
     # User books a class
 
-    ('/api/users/bookings', get_class_bookings_per_user_api, ['GET'])
+    ('/api/users/bookings', get_class_bookings_per_user_api, ['GET']),
     # User views their own bookings
+
+    ('/api/users/bookings/cancel', cancel_user_class_booking_api, ['GET'])
+    # User cancels their class booking
 ]
