@@ -1,0 +1,11 @@
+Users and their plaintext passwords:
+Prateek - 9000000000 - WarrenBuffet
+Ananya - 9000000001 - WarrenBuffet
+Rajat - 9000000002 - WarrenBuffet
+Megha - 9000000003 - WarrenBuffet
+Aditya - 9000000004 - WarrenBuffet
+Neha - neha_test5@yopmail.com - WarrenBuffet
+Siddharth - siddharth_test6@yopmail.com - WarrenBuffet
+Isha - isha_test7@yopmail.com - WarrenBuffet
+Arjun - 9000000008 - WarrenBuffet
+Priya - priya_test9@yopmail.com - WarrenBuffet
