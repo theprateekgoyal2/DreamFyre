@@ -1,10 +1,20 @@
 from typing import Any
 from sql_config import session_wrap
-from decorators import login_required
+from users.models import Users
 from .models import FitnessClass, Bookings
 from .validations import validate_fitness_class_payload
-from users.models import Users
-from constants import BookingStatus, FitnessClasses, Fitness_Class_Description_Mapper
+from .constants import BookingStatus, FitnessClasses, Fitness_Class_Description_Mapper
+
+
+@session_wrap
+def get_fitness_classes(class_name: str, session: Any) -> dict:
+    class_name = class_name.lower()
+    classes = FitnessClass.get_by_name(session, class_name)
+    if not classes:
+        return {'error': f'No upcoming classes found for {class_name}'}
+
+    classes_dict = {item.to_dict() for item in classes}
+    return {'message': f'Here is the list of upcoming {class_name} classes!', 'data': classes_dict}
 
 
 @session_wrap
@@ -13,16 +23,16 @@ def create_new_class(request_body: dict, session: Any) -> dict:
     if 'error' in is_valid:
         return is_valid
 
-    name = request_body.get('name')
+    name = request_body.get('name').lower()
     capacity = request_body.get('capacity')
     instructor = request_body.get('instructor')
     duration = request_body.get('duration')
     datetime_str = request_body.get('datetime_str')
 
-    description = Fitness_Class_Description_Mapper.get('name')
+    description = Fitness_Class_Description_Mapper.get(name)
 
     new_class = FitnessClass.create_class(
-        name.lower(), datetime_str, duration, instructor, capacity, description
+        name, datetime_str, duration, instructor, capacity, description
     )
 
     session.add(new_class)
@@ -32,7 +42,6 @@ def create_new_class(request_body: dict, session: Any) -> dict:
 
 
 @session_wrap
-@login_required
 def get_class_bookings_per_user(token: str, session: Any):
     user_id = Users.get_user_id(token, session)
     if not user_id:
@@ -44,14 +53,13 @@ def get_class_bookings_per_user(token: str, session: Any):
 
 
 @session_wrap
-@login_required
 def create_class_booking_per_user(token: str, class_id: int, session: Any):
     user_id = Users.get_user_id(token, session)
     if not user_id:
         return {'error': 'No user found'}
 
     try:
-        fitness_class = FitnessClass.get_by_id(session, class_id, True, no_wait=True)
+        fitness_class = FitnessClass.get_by_id(session, class_id, True, True)
     except Exception as e:
         return {'error': f'Error booking class: {str(e)}'}
 

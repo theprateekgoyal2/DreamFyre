@@ -1,5 +1,5 @@
 from datetime import datetime
-from constants import FitnessClasses, MaxClassDuration, MaxClassCapacity
+from .constants import FitnessClasses, MaxClassDuration, MaxClassCapacity
 
 
 def validate_fitness_class_payload(payload: dict) -> dict:

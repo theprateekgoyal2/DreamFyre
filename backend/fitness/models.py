@@ -70,7 +70,7 @@ class FitnessClass(Base):
 
     @classmethod
     def get_by_name(cls, session, name):
-        return session.query(cls).filter(name=name).all()
+        return session.query(cls).filter_by(name=name).all()
 
     def to_dict(self):
         return {

@@ -1,8 +1,9 @@
 from functools import wraps
 from flask import request, jsonify
-from users.models import Users
 from flask_jwt_extended import decode_token
 import jwt
+from sql_config import session_wrap
+from users.models import Users
 
 
 def login_required(f):
@@ -17,13 +18,11 @@ def login_required(f):
             return {'message': 'Token is missing !!'}
 
         try:
-            # Decoding the payload to fetch the stored details
-            data = decode_token(token)
 
             # Fetch user from the database using public_id
-            current_user = Users.query.filter_by(prim_id=data['sub']).first()
+            current_user_id = get_user_id_from_token(token=token)
 
-            if not current_user:
+            if not current_user_id:
                 return {'message': 'User not found'}
 
             # Pass the current user to the decorated function
@@ -39,3 +38,10 @@ def login_required(f):
             return jsonify({"error": str(e)}), 500
 
     return decorated
+
+
+@session_wrap
+def get_user_id_from_token(token, session):
+    data = decode_token(token)
+    current_user = session.query(Users).filter_by(prim_id=data['sub']).first()
+    return current_user.prim_id if current_user else None
