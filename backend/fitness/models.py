@@ -122,6 +122,10 @@ class Bookings(Base):
     def get_existing_booking(cls, session, class_id, client_id):
         return session.query(cls).filter_by(client_id=client_id, class_id=class_id, status=BookingStatus.CONFIRMED.value).first()
 
+    @classmethod
+    def get_active_bookings(cls, session, client_id):
+        return session.query(cls).filter_by(client_id=client_id, status=BookingStatus.CONFIRMED.value).all()
+
     def to_dict(self):
         return {
             "booking_id": self.prim_id,

@@ -98,7 +98,7 @@ def get_class_bookings_per_user_handler(token: str, session: Any) -> dict:
     """
     try:
         user_id = Users.get_user_id(session, token)
-        classes = session.query(Bookings).filter_by(client_id=user_id).all()
+        classes = Bookings.get_active_bookings(session=session, client_id=user_id)
 
         if not classes:
             return {'message': 'No bookings found for this user', 'data': []}
